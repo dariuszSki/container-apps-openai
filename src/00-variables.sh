@@ -1,10 +1,10 @@
 # Variables
 
 # Azure Container Registry
-prefix="Blue"
+prefix="Dariusz"
 acrName="${prefix}Registry"
 acrResourceGrougName="${prefix}RG"
-location="northeurope"
+location="eastus"
 
 # Python Files
 docAppFile="doc.py"

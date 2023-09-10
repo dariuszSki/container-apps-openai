@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatapp
+  namespace: chatbot
+data:
+  TEMPERATURE: "0.9"
+  AZURE_OPENAI_BASE: https://dariuszopenai.openai.azure.com/
+  AZURE_OPENAI_KEY: ""
+  AZURE_OPENAI_TYPE: azure_ad
+  AZURE_OPENAI_DEPLOYMENT: gpt-35-turbo-16k
+  AZURE_OPENAI_MODEL: gpt-35-turbo-16k
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatapp
+  labels:
+    app: chatapp
+  namespace: chatbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatapp
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: chatapp
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: chatbot-sa
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: chatapp
+        image: dariuszregistry.azurecr.io/chat:v1
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          failureThreshold: 1
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          failureThreshold: 1
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8000
+          failureThreshold: 1
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        env:
+        - name: TEMPERATURE
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: TEMPERATURE
+        - name: AZURE_OPENAI_BASE
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: AZURE_OPENAI_BASE
+        - name: AZURE_OPENAI_KEY
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: AZURE_OPENAI_KEY
+        - name: AZURE_OPENAI_TYPE
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: AZURE_OPENAI_TYPE
+        - name: AZURE_OPENAI_DEPLOYMENT
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: AZURE_OPENAI_DEPLOYMENT
+        - name: AZURE_OPENAI_MODEL
+          valueFrom:
+            configMapKeyRef:
+                name: chatapp
+                key: AZURE_OPENAI_MODEL
+        # - name: AZURE_CLIENT_ID
+        #   value: 9e723cae-38bc-4c14-91dd-47a9842324b1
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    azure.workload.identity/client-id: 60c52bfe-9336-469f-8e32-496ec0a4e9a9
+    azure.workload.identity/tenant-id: 25445e86-2ae6-4434-b116-25c66c27168d
+  name: chatbot-sa
+  namespace: chatbot
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatapp
+  labels:
+    app: chatapp
+  namespace: chatbot
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: chatapp
+  type: LoadBalancer
+

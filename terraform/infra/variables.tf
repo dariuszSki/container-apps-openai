@@ -173,3 +173,13 @@ variable "workload_managed_identity_name" {
   type = string
   default = "WorkloadIdentity"
 }
+
+variable "ziti_router_reg_key" {
+  description = "(Required) Registration Key for Ziti Edge Router"
+  type = string
+}
+
+variable "ziti_router_ssh_pub" {
+  description = "(Required) SSH Public Key for Ziti Edge Router"
+  type = string
+}

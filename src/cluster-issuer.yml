@@ -16,3 +16,5 @@ spec:
             spec:
               nodeSelector:
                 "kubernetes.io/os": linux
+
+# kubectl create secret generic letsencrypt --from-literal secret="UlcxQm9GR2FXbHJPemo5T2EzRmJ4dw=="

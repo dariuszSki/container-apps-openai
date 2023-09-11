@@ -1,7 +1,8 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: chatapp-ingress
+  name: openai-apps-ingress
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-nginx
     cert-manager.io/acme-challenge-type: http01 
@@ -15,47 +16,44 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - chatapp.dariuszski.dev
-    secretName: tls-secret
+    - "*.dariuszski.dev"
+    secretName: tls-secret-chat
   rules:
-  - host: chatapp.dariuszski.dev
+  - host: "*.dariuszski.dev"
     http:
       paths:
-      - path: /
+      - path: /chatapp
         pathType: Prefix
         backend:
           service:
             name: chatapp
             port:
               number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: docapp-ingress
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-nginx
-    cert-manager.io/acme-challenge-type: http01 
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "360"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
-    nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: "360"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "X-Frame-Options: SAMEORIGIN";
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - docapp.dariuszski.dev
-    secretName: tls-secret
-  rules:
   - host: docapp.dariuszski.dev
     http:
       paths:
-      - path: /
+      - path: /docapp
         pathType: Prefix
         backend:
           service:
             name: docapp
             port:
               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: ngix
+spec:
+  controller:
+    nodeSelector:
+      agentpool: "kubernetes.io/os": linux
+    service:
+      loadBalancerIP: 
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+        # service.beta.kubernetes.io/azure-load-balancer-internal-subnet: <node-pool-subnet-name>
+  defaultBackend:
+    nodeSelector:
+      agentpool: "kubernetes.io/os": linux
+

@@ -7,7 +7,7 @@ output "log_analytics_workspace_id" {
 }
 
 output "ziti_router_public_ip_address" {
-   value = azurerm_public_ip.public_ip.ip_address
+   value = module.edge-router.public_ip_address
 }
 
 output "aks_cluster_name" {

@@ -228,14 +228,6 @@ resource "azurerm_federated_identity_credential" "federated_identity_credential"
   subject             = "system:serviceaccount:chatbot:chatbot-sa"
 }
 
-resource "azurerm_public_ip" "public_ip" {
-  name                = lower("${var.name_prefix}publicip")
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = var.location
-  allocation_method   = "Static"
-  sku                 = "Standard"         
-}
-
 resource "azurerm_network_security_group" "edge_router_nsg" {
   name                = "${var.name_prefix}-nsg"
   location            = var.location

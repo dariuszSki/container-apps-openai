@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+  namespace: chatbot
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: ynwa.lfc@dariuszski.dev
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   namespace: cert-manager
+#   name: aiapps
+# spec:
+#   commonName: "*dariuszski.dev"
+#   dnsNames:
+#     - "*.dariuszski.dev"
+#   issuerRef:
+#     name: letsencrypt-http01-issuer
+#     kind: ClusterIssuer
+#   secretName: letsencrypt-staging

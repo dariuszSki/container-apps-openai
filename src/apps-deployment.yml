@@ -153,8 +153,8 @@ spec:
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: chatbot-sa
-      nodeSelector:
-        "kubernetes.io/os": linux
+      # nodeSelector:
+      #   "kubernetes.io/os": linux
       containers:
       - name: docapp
         image: dariuszregistry.azurecr.io/doc:v1
@@ -233,7 +233,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    azure.workload.identity/client-id: 6bd2c50d-e3d5-4139-a270-c570baed59ac
+    azure.workload.identity/client-id: 3aadaa4b-94f3-4e0c-a83a-0e23b3640a30
     azure.workload.identity/tenant-id: 25445e86-2ae6-4434-b116-25c66c27168d
   name: chatbot-sa
   namespace: chatbot
@@ -246,7 +246,7 @@ metadata:
     app: chatapp
   namespace: chatbot
 spec:
-  type: ClusterIP
+  # type: ClusterIP
   ports:
   - port: 80
     protocol: TCP
@@ -263,7 +263,7 @@ metadata:
     app: docapp
   namespace: chatbot
 spec:
-  type: ClusterIP
+  # type: ClusterIP
   ports:
   - port: 80
     protocol: TCP

@@ -1,26 +1,38 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: openai-apps-ingress
+  name: chatapp-ingress
   namespace: chatbot
-  annotations: {}
-    # cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
-    - "*.dariuszski.dev"
-  ingressClassName: nginx
+    - chatapp.dariuszski.dev
+    secretName: chatapp
   rules:
   - host: "chatapp.dariuszski.dev"
     http:
       paths:
       - pathType: Prefix
-        path: "/"
+        path: /
         backend:
           service:
             name: chatapp
             port:
               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docapp-ingress
+  namespace: chatbot
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - docapp.dariuszski.dev
+    secretName: docapp
+  rules:
   - host: "docapp.dariuszski.dev"
     http:
       paths:

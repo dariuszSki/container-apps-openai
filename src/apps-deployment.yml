@@ -112,8 +112,6 @@ spec:
             configMapKeyRef:
                 name: chatapp
                 key: AZURE_OPENAI_MODEL
-        # - name: AZURE_CLIENT_ID
-        #   value: 9e723cae-38bc-4c14-91dd-47a9842324b1
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -153,8 +151,8 @@ spec:
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: chatbot-sa
-      # nodeSelector:
-      #   "kubernetes.io/os": linux
+      nodeSelector:
+        "kubernetes.io/os": linux
       containers:
       - name: docapp
         image: dariuszregistry.azurecr.io/doc:v1
@@ -233,8 +231,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    azure.workload.identity/client-id: 3aadaa4b-94f3-4e0c-a83a-0e23b3640a30
-    azure.workload.identity/tenant-id: 25445e86-2ae6-4434-b116-25c66c27168d
+    azure.workload.identity/client-id: { Your Own Client }
+    azure.workload.identity/tenant-id: { Your Own Tenant }
   name: chatbot-sa
   namespace: chatbot
 ---
@@ -246,14 +244,13 @@ metadata:
     app: chatapp
   namespace: chatbot
 spec:
-  # type: ClusterIP
+  type: ClusterIP
   ports:
   - port: 80
     protocol: TCP
     targetPort: 8000
   selector:
     app: chatapp
-  # type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
@@ -263,11 +260,11 @@ metadata:
     app: docapp
   namespace: chatbot
 spec:
-  # type: ClusterIP
+  type: ClusterIP
   ports:
   - port: 80
     protocol: TCP
     targetPort: 8000
   selector:
     app: docapp
-  # type: LoadBalancer
+
